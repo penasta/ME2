@@ -5,5 +5,7 @@
 ### Matrícula: 15/0167636
 ### 2º/2022
 
-Repositório público para compartilhamento e backup das atividades por mim elaboradas no decorrer do semestre no que se refere à disciplina descrita. Todo conteúdo aqui postado é de minha autoria e é permitido o livre uso, cópia e circulação.
+Repositório pessoal público para compartilhamento e backup das atividades por mim elaboradas no decorrer do semestre no que se refere à disciplina descrita. 
+
+O conteúdo aqui presentes é livre para uso, modificação, publicação e demais finalidades, sem necessidade de crédito ao(s) autor(es).
 Pela democratização do conhecimento. Fora Bolsonaro.
