@@ -84,6 +84,7 @@ for (i in 1:50){
   
   n <- as.numeric(length(amostras200[[i]]$SEXO[!is.na(amostras200[[i]]$SEXO)]))
   p <- as.numeric(table(amostras200[[i]]$SEXO))[1]/sum(as.numeric(table(amostras200[[i]]$SEXO)))
+  
   margin <- qnorm(0.975)*sqrt(p*(1-p)/n)
   lowerinterval <- p - margin
   upperinterval <- p + margin
@@ -221,3 +222,5 @@ ggplot(as.data.frame(table(mdmt200)), aes(x=mdmt200, y = Freq, )) +
        y="Frequência",
        caption="IC 95%"
   )
+
+#------------------------------------------------------------------------------
