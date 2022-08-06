@@ -90,15 +90,15 @@ qqline(amostra200$NOTA_MT)
 # Realizando os testes de normalidade
 # Teste Shapiro-Wilk
 
-shapiro.test(amostra200$NOTA_MT)
+swt1 <- shapiro.test(amostra200$NOTA_MT)
 
 # Teste Anderson-Darling
 
-ad.test(amostra200$NOTA_MT)
+adt1 <- ad.test(amostra200$NOTA_MT)
 
 # Teste Lilliefors (Kolmogorov-Smirnov)
 
-lillie.test(amostra200$NOTA_MT)
+lt1 <- lillie.test(amostra200$NOTA_MT)
 
 # Análise: (...)
 
@@ -123,15 +123,15 @@ qqline(amostra20$NOTA_MT)
 # Realizando os testes de normalidade
 # Teste Shapiro-Wilk
 
-shapiro.test(amostra20$NOTA_MT)
+swt2mt <- shapiro.test(amostra20$NOTA_MT)
 
 # Teste Anderson-Darling
 
-ad.test(amostra20$NOTA_MT)
+adt2mt <- ad.test(amostra20$NOTA_MT)
 
 # Teste Lilliefors (Kolmogorov-Smirnov)
 
-lillie.test(amostra20$NOTA_MT)
+lt2mt <- lillie.test(amostra20$NOTA_MT)
 
 # Análise: (...)
 
@@ -155,15 +155,15 @@ qqline(amostra20$NOTA_LP)
 # Realizando os testes de normalidade
 # Teste Shapiro-Wilk
 
-shapiro.test(amostra20$NOTA_LP)
+swt2lp <- shapiro.test(amostra20$NOTA_LP)
 
 # Teste Anderson-Darling
 
-ad.test(amostra20$NOTA_LP)
+adt2lp <- ad.test(amostra20$NOTA_LP)
 
 # Teste Lilliefors (Kolmogorov-Smirnov)
 
-lillie.test(amostra20$NOTA_LP)
+lt2lp <- lillie.test(amostra20$NOTA_LP)
 
 # Análise: (...)
 #------------------------------------------------------------------------------

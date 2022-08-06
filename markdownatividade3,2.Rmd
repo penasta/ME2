@@ -1,0 +1,242 @@
+---
+title: ''
+subtitle: ""
+author: ""
+date: ""
+
+output:
+  pdf_document:
+  fig_crop: false
+highlight: tango
+number_sections: false
+fig_caption: true
+keep_tex: true
+includes:
+  in_header: Estilo.sty
+classoption: a4paper
+always_allow_html: true
+---
+  
+  
+\begin{center}
+{\Large
+  DEPARTAMENTO DE ESTATÍSTICA} \\
+\vspace{0.5cm}
+\begin{figure}[!t]
+\centering
+\includegraphics[width=9cm, keepaspectratio]{logo-UnB.eps}
+\end{figure}
+\vskip 1em
+{\large
+  `r format(Sys.time(), '%d %B %Y')`}
+\vskip 3em
+{\LARGE
+  \textbf{Atividade 3.2}} \\
+\vskip 1em
+{\Large
+  Profª. Ana Maria Nogales} \\
+\vskip 1em
+{\Large
+  Métodos Estatísticos 2} \\
+\vskip 1em
+{\Large
+  Aluno: Bruno Gondim Toledo | Matrícula: 15/0167636} \\
+\vskip 1em
+\end{center}
+
+\vskip 5em
+
+```{r setup, include=FALSE}
+
+if (!require("pacman")) install.packages("pacman")
+p_load(readr,tidyverse,nortest,rmdformats,knitr)
+
+```
+
+```{r prep, echo=FALSE, include=FALSE, message=FALSE, results='hide'}
+
+amostra <- read_csv("./banco/amostra_150167636.csv")
+
+amostra$ANO_NASC<-replace(amostra$ANO_NASC, amostra$ANO_NASC=="1998 ou antes",1999) 
+amostra$ANO_NASC<-replace(amostra$ANO_NASC, amostra$ANO_NASC=="2005 ou depois",2004)
+amostra$ANO_NASC<-as.numeric(amostra$ANO_NASC)
+
+amostras20 <- list()
+for (i in 1:50) {
+  amostras20[[i]] <- sample_n(amostra,20)
+}
+
+amostras200 <- list()
+for (i in 1:50) {
+  amostras200[[i]] <- sample_n(amostra,200)
+}
+
+amostra20 <- amostras20[[sample(1:50, size=1)]]
+
+amostra200 <- amostras200[[sample(1:50, size=1)]]
+
+```
+
+\center
+**Atividade 3.2 - Análise de dados: testes de aderência**
+\raggedright
+\vskip 1em
+Escolha duas subamostras geradas na atividade 2.2 (uma com n= 20 e a outra com n=200):
+
+\begin{enumerate}
+\item \textbf{Para a amostra com n=200, construa uma distribuição de frequências para uma das variáveis nota em língua portuguesa ou em matemática (como na Atividade 1.3; escolher uma das variáveis) e verifique se os dados podem ser descritos pela distribuição Normal.}.
+\item \textbf{Teste normalidade das variáveis notas em língua portuguesa e matemática para a amostra (n=20). Apresente os testes de Shapiro-Wilk, Anderson-Darling e Kolmogorov (Lilliefors). }.
+\item \textbf{Comente os resultados obtidos, à luz da análise descritiva realizada com a amostra com 2000 observações (Atividade 1.3).}
+\end{enumerate}
+
+\newpage
+
+# 1 - Distribuição de frequência para a variável Nota em Matemática para a amostra n=200 e verificação de normalidade
+
+## 1º passo: Histograma
+
+Começarei por fazer um histograma, que além de apresentar as distribuições de frequências da variável, nos fornece um panorama visual acerca de sua semelhança com o formato de uma distribuição normal, se for o caso.
+
+```{r histograma1, echo=FALSE}
+
+hist(amostra200$NOTA_MT
+     ,main="Histograma Notas Matemática - Amostra n=200"
+     ,xlab="Nota"
+     ,ylab="Frequência"
+)
+
+```
+
+\newpage
+
+## 2º passo: Gráfico *Quantil-Quantil*
+
+Seguidamente, farei um gráfico Q-Q, que traz mais uma perspectiva visual do esperado para uma distribuição normal (linha cortando o gráfico) com o observado (pontos)
+
+```{r graficoqq1, echo=FALSE}
+
+qqnorm(amostra200$NOTA_MT
+       ,main="Gráfico Q-Q da variável Nota em Matemática - Amostra n=200"
+       ,xlab="Quantis esperados para uma variável com distribuição normal"
+       ,ylab="Quantis observados na amostra"
+       )
+qqline(amostra200$NOTA_MT)
+
+```
+
+Essas duas abordagens nos ajudam a balizar a decisão. Pela análise visual, a distribuição aparenta ser aproximadamente normal. Porém isso não é suficiente para inferirmos uma resposta. Para tal, é necessário realizar testes de normalidade.
+
+## 3º passo: Realizando testes de normalidade
+
+```{r testes1, echo=FALSE}
+
+swt1 <- shapiro.test(amostra200$NOTA_MT)
+adt1 <- ad.test(amostra200$NOTA_MT)
+lt1 <- lillie.test(amostra200$NOTA_MT)
+
+```
+
+O teste de *Shapiro-Wilk* apresentou estatística de teste **W=`r as.numeric(swt1$statistic)`**, com **p-valor=`r swt1$p.value`**.
+O teste de *Anderson-Darling* apresentou estatística de teste **A=`r as.numeric(adt1$statistic)`**, com **p-valor=`r adt1$p.value`**.
+O teste de *Kolmogorov (Lilliefors)* apresentou estatística de teste **D=`r as.numeric(lt1$statistic)`**, com **p-valor=`r lt1$p.value`**.
+
+Com esses resultados, devemos **rejeitar a hipótese de normalidade da amostra**.
+
+
+\newpage
+
+# 2 - Testando normalidade das variáveis notas em língua portuguesa e matemática para a amostra (n=20)
+
+De forma análoga à questão anterior, seguirei os 3 passos para testar a normalidade de cada uma das variáveis.
+
+## Variável nota em Matemática
+
+### 1º passo: Histograma
+
+```{r histograma2mt, echo=FALSE}
+
+hist(amostra20$NOTA_MT
+     ,main="Histograma Notas em Matemática - Amostra n=20"
+     ,xlab="Nota"
+     ,ylab="Frequência"
+)
+
+```
+
+### 2º passo: Gráfico *Quantil-Quantil*
+
+```{r graficoqq2mt, echo=FALSE}
+
+qqnorm(amostra20$NOTA_MT
+       ,main="Gráfico Q-Q da variável Nota em Matemática - Amostra n=200"
+       ,xlab="Quantis esperados para uma variável com distribuição normal"
+       ,ylab="Quantis observados na amostra"
+)
+qqline(amostra20$NOTA_MT)
+
+```
+
+### 3º passo: Realizando testes de normalidade
+
+```{r testes2mt, echo=FALSE}
+
+swt2mt <- shapiro.test(amostra20$NOTA_MT)
+adt2mt <- ad.test(amostra20$NOTA_MT)
+lt2mt <- lillie.test(amostra20$NOTA_MT)
+
+```
+
+O teste de *Shapiro-Wilk* apresentou estatística de teste **W=`r as.numeric(swt2mt$statistic)`**, com **p-valor=`r swt2mt$p.value`**.
+O teste de *Anderson-Darling* apresentou estatística de teste **A=`r as.numeric(adt2mt$statistic)`**, com **p-valor=`r adt2mt$p.value`**.
+O teste de *Kolmogorov (Lilliefors)* apresentou estatística de teste **D=`r as.numeric(lt2mt$statistic)`**, com **p-valor=`r lt2mt$p.value`**.
+
+Com esses resultados, devemos **rejeitar a hipótese de normalidade da amostra**.
+
+## Variável Nota em Língua Portuguesa
+
+### 1º passo: Histograma
+
+```{r histograma2lp, echo=FALSE}
+
+hist(amostra20$NOTA_LP
+     ,main="Histograma Notas em Língua Portuguesa - Amostra n=20"
+     ,xlab="Nota"
+     ,ylab="Frequência"
+)
+
+```
+
+### 2º passo: Gráfico *Quantil-Quantil*
+
+```{r graficoqq2lp, echo=FALSE}
+
+qqnorm(amostra20$NOTA_LP
+       ,main="Gráfico Q-Q da variável Nota em Língua Portuguesa - Amostra n=200"
+       ,xlab="Quantis esperados para uma variável com distribuição normal"
+       ,ylab="Quantis observados na amostra"
+)
+qqline(amostra20$NOTA_LP)
+
+```
+
+### 3º passo: Realizando testes de normalidade
+
+```{r testes2lp, echo=FALSE}
+
+swt2lp <- shapiro.test(amostra20$NOTA_LP)
+adt2lp <- ad.test(amostra20$NOTA_LP)
+lt2lp <- lillie.test(amostra20$NOTA_LP)
+
+```
+
+O teste de *Shapiro-Wilk* apresentou estatística de teste **W=`r as.numeric(swt2lp$statistic)`**, com **p-valor=`r swt2lp$p.value`**.
+O teste de *Anderson-Darling* apresentou estatística de teste **A=`r as.numeric(adt2lp$statistic)`**, com **p-valor=`r adt2lp$p.value`**.
+O teste de *Kolmogorov (Lilliefors)* apresentou estatística de teste **D=`r as.numeric(lt2lp$statistic)`**, com **p-valor=`r lt2lp$p.value`**.
+
+Com esses resultados, devemos **rejeitar a hipótese de normalidade da amostra**.
+
+\newpage
+
+# 3 - Comente os resultados obtidos, à luz da análise descritiva realizada com a amostra com 2000 observações.
+
+Na análise da atividade *1.3*, os resultados obtidos **rejeitaram** a hipótese de normalidade para ambas as variáveis (Nota em Matemática e Nota em Língua Portuguesa) para a amostra n=2000. Como nesta atividade (*3.2*) estou trabalhando com duas subamostras (n=20 e n=200) retiradas dessa amostra n=2000 (da atividade *1.3*), era de se esperar que, assim como a análise anterior, por mais que a abordagem visual com o histograma e com o gráfico *Q-Q* se assemelhem ao esperado de uma distribuição normal, os testes de normalidade e aderência comprovam que esta é uma falsa premissa nos casos aqui estudados.
