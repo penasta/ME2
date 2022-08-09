@@ -140,7 +140,7 @@ O teste de *Shapiro-Wilk* apresentou estatística de teste **W=`r as.numeric(swt
 O teste de *Anderson-Darling* apresentou estatística de teste **A=`r as.numeric(adt1$statistic)`**, com **p-valor=`r adt1$p.value`**.
 O teste de *Kolmogorov (Lilliefors)* apresentou estatística de teste **D=`r as.numeric(lt1$statistic)`**, com **p-valor=`r lt1$p.value`**.
 
-Com esses resultados, devemos **rejeitar a hipótese de normalidade da amostra**.
+Com esses resultados, devemos **aceitar a hipótese de normalidade da amostra**.
 
 
 \newpage
@@ -190,7 +190,7 @@ O teste de *Shapiro-Wilk* apresentou estatística de teste **W=`r as.numeric(swt
 O teste de *Anderson-Darling* apresentou estatística de teste **A=`r as.numeric(adt2mt$statistic)`**, com **p-valor=`r adt2mt$p.value`**.
 O teste de *Kolmogorov (Lilliefors)* apresentou estatística de teste **D=`r as.numeric(lt2mt$statistic)`**, com **p-valor=`r lt2mt$p.value`**.
 
-Com esses resultados, devemos **rejeitar a hipótese de normalidade da amostra**.
+Com esses resultados, devemos **aceitar a hipótese de normalidade da amostra**.
 
 ## Variável Nota em Língua Portuguesa
 
@@ -233,10 +233,10 @@ O teste de *Shapiro-Wilk* apresentou estatística de teste **W=`r as.numeric(swt
 O teste de *Anderson-Darling* apresentou estatística de teste **A=`r as.numeric(adt2lp$statistic)`**, com **p-valor=`r adt2lp$p.value`**.
 O teste de *Kolmogorov (Lilliefors)* apresentou estatística de teste **D=`r as.numeric(lt2lp$statistic)`**, com **p-valor=`r lt2lp$p.value`**.
 
-Com esses resultados, devemos **rejeitar a hipótese de normalidade da amostra**.
+Com esses resultados, devemos **aceitar a hipótese de normalidade da amostra**.
 
 \newpage
 
 # 3 - Comente os resultados obtidos, à luz da análise descritiva realizada com a amostra com 2000 observações.
 
-Na análise da atividade *1.3*, os resultados obtidos **rejeitaram** a hipótese de normalidade para ambas as variáveis (Nota em Matemática e Nota em Língua Portuguesa) para a amostra n=2000. Como nesta atividade (*3.2*) estou trabalhando com duas subamostras (n=20 e n=200) retiradas dessa amostra n=2000 (da atividade *1.3*), era de se esperar que, assim como a análise anterior, por mais que a abordagem visual com o histograma e com o gráfico *Q-Q* se assemelhem ao esperado de uma distribuição normal, os testes de normalidade e aderência comprovam que esta é uma falsa premissa nos casos aqui estudados.
+Na análise da atividade *1.3*, os resultados obtidos **rejeitaram** a hipótese de normalidade para ambas as variáveis (Nota em Matemática e Nota em Língua Portuguesa) para a amostra n=2000. Nesta atividade (*3.2*) estou trabalhando com duas subamostras (n=20 e n=200), retirados dessa amostra maior. Apesar da amostra original eu ter **rejeitado** a hipótese de normalidade, esta se deu por conta do *p-valor* reduzido, o que é de se esperar em uma amostra grande. Como as amostras aqui trabalhadas são consideravelmente reduzidas, tanto as *estatísticas de teste* quanto os *p-valores* estão na margem de aceitação. Isso se dá por conta dos testes serem conservadores em relação à aceitação da hipótese nula em caso de n pequeno.
