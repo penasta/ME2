@@ -1,0 +1,462 @@
+---
+title: ''
+subtitle: ""
+author: ""
+date: ""
+
+output:
+  pdf_document:
+  fig_crop: false
+highlight: tango
+number_sections: false
+fig_caption: true
+keep_tex: true
+includes:
+  in_header: Estilo.sty
+classoption: a4paper
+always_allow_html: true
+---
+  
+  
+\begin{center}
+{\Large
+  DEPARTAMENTO DE ESTATÍSTICA} \\
+\vspace{0.5cm}
+\begin{figure}[!t]
+\centering
+\includegraphics[width=9cm, keepaspectratio]{logo-UnB.eps}
+\end{figure}
+\vskip 1em
+{\large
+  `r format(Sys.time(), '%d %B %Y')`}
+\vskip 3em
+{\LARGE
+  \textbf{Atividade 3.3}} \\
+\vskip 1em
+{\Large
+  Profª. Ana Maria Nogales} \\
+\vskip 1em
+{\Large
+  Métodos Estatísticos 2} \\
+\vskip 1em
+{\Large
+  Aluno: Bruno Gondim Toledo | Matrícula: 15/0167636} \\
+\vskip 1em
+\end{center}
+
+\vskip 5em
+
+```{r setup, include=FALSE}
+
+#-------------------------------------------------------------------------------
+# 0.1: Carregando pacotes
+
+if (!require("pacman")) install.packages("pacman")
+p_load(tidyverse,nortest,rmdformats,knitr)
+
+#-------------------------------------------------------------------------------
+# 0.2: Seed
+
+# Meu código é feito para cada vez executado, todas as amostras são geradas aleatoriamente
+# e cada vez executado produzirá um resultado único. Caso deseje fixar a seed, rode o comando abaixo:
+
+# set.seed(*insira um inteiro aqui*)
+
+# Caso tenha inserido uma seed mas queira voltar a aleatoriedade, execute o comando abaixo:
+
+# set.seed(NULL)
+
+#-------------------------------------------------------------------------------
+
+```
+
+# **1.** Testes de *Kolmogorov* para normalidade
+## Gere 1000 (mil) amostras de tamanho 15 de uma variável normalmente distribuída com média *$\mu$* e desvio padrão *$\sigma$*.
+### A média *$\mu$* deverá ser gerada aleatoriamente no intervalo entre 100 e 200
+### Para o cálculo do desvio padrão considere um CV igual a 10%.
+
+```{r gerandoamostras1, echo=FALSE, include=FALSE, message=FALSE, results='hide'}
+
+amostras <- list()
+medias <- list()
+desvios <- list()
+for (i in 1:1000) {
+  media <- sample(100:200, size=1)
+  s <- 10*media 
+  amostras[[i]] <- rnorm(15, mean = media, sd = s)
+  medias[[i]] <- media
+  desvios[[i]] <- s
+}
+
+```
+
+## Para cada amostra, obtenha a Estatística de Teste, tipo *Kolmogorov* (considere teste bicaudal)
+
+### **CASO 1:** considere que a Função de distribuição Normal está totalmente especificada, ou seja, utilize os valores da média e desvio padrão considerados para a geração das amostras
+
+```{r amostrasetestes1, echo=FALSE, include=FALSE, message=FALSE, results='hide'}
+
+amostras2 <- list()
+for (i in 1:1000) {
+  media <- medias[[i]]
+  s <- desvios[[i]]
+  amostras2[[i]] <- rnorm(15, mean = media, sd = s)
+}
+
+testes <- list()
+for(i in 1:1000) {
+  testes[[i]] <- ks.test(amostras[[i]],amostras2[[i]])
+}
+
+```
+
+### **CASO 2:** considere que a Função de distribuição Normal não foi especificada, e você deverá estimar a média e o desvio padrão a partir dos dados amostrais.
+
+```{r amostrasetestes2, echo=FALSE, include=FALSE, message=FALSE, results='hide'}
+
+amostras3 <- list()
+for (i in 1:1000) {
+  media <- mean(amostras[[i]])
+  s <- sd(amostras[[i]])
+  amostras3[[i]] <- rnorm(15, mean = media, sd = s)
+}
+
+testes2 <- list()
+for(i in 1:1000) {
+  testes2[[i]] <- ks.test(amostras[[i]],amostras3[[i]])
+}
+
+```
+
+### Você terá dois conjuntos de 1000 estimativas da estatística de teste, tipo *Kolmogorov*
+
+## Para cada conjunto de estimativas da estatística de teste, faça uma análise descritiva (apresente gráficos), obtenha os quantis 80%, 85%, 90%, 95%, 97,5%, 99%, e compare com os quantis tabelados (Tabelas do *Conover*) segundo cada caso. Comente os resultados.
+
+```{r quantis, echo=FALSE, include=FALSE, message=FALSE, results='hide'}
+
+# valores tabelados p/ teste bicaudal p/ n=15
+valortabelaconover80 <- 0.266
+valortabelaconover90 <- 0.304
+valortabelaconover95 <- 0.338
+valortabelaconover98 <- 0.377
+valortabelaconover99 <- 0.404
+
+# Valores não tabelados pelo Conover, irei estimar tirando médias dos valores dados.
+
+valortabelaconover85 <- (valortabelaconover80+valortabelaconover90)/2
+valortabelaconover975 <- valortabelaconover95+(valortabelaconover95-valortabelaconover90)
+
+#-------------------------------------------------------------------------------
+
+# QUANTIS DOS TESTES DO CASO 1
+
+# 80%
+proptestescaso180 <- NA
+for(i in 1:1000) {
+proptestescaso180 <- c(proptestescaso180,ifelse(as.numeric(testes[[i]]$statistic) >= valortabelaconover80, 1,0))
+}
+proptestescaso180 <- proptestescaso180[2:1001]
+proptestescaso180 <- sum(proptestescaso180)/1000
+proptestescaso180
+
+
+# 85%
+valortabelaconover85 <- (valortabelaconover80+0.304)/2
+proptestescaso185 <- NA
+for(i in 1:1000) {
+  proptestescaso185 <- c(proptestescaso185,ifelse(as.numeric(testes[[i]]$statistic) >= valortabelaconover85, 1,0))
+}
+proptestescaso185 <- proptestescaso185[2:1001]
+proptestescaso185 <- sum(proptestescaso185)/1000
+proptestescaso185
+
+
+# 90%
+proptestescaso190 <- NA
+for(i in 1:1000) {
+  proptestescaso190 <- c(proptestescaso190,ifelse(as.numeric(testes[[i]]$statistic) >= valortabelaconover90, 1,0))
+}
+proptestescaso190 <- proptestescaso190[2:1001]
+proptestescaso190 <- sum(proptestescaso190)/1000
+proptestescaso190
+
+
+# 95%
+proptestescaso195 <- NA
+for(i in 1:1000) {
+  proptestescaso195 <- c(proptestescaso195,ifelse(as.numeric(testes[[i]]$statistic) >= valortabelaconover95, 1,0))
+}
+proptestescaso195 <- proptestescaso195[2:1001]
+proptestescaso195 <- sum(proptestescaso195)/1000
+proptestescaso195
+
+# 97,5%
+proptestescaso1975 <- NA
+for(i in 1:1000) {
+  proptestescaso1975 <- c(proptestescaso1975,ifelse(as.numeric(testes[[i]]$statistic) >= valortabelaconover975, 1,0))
+}
+proptestescaso1975 <- proptestescaso1975[2:1001]
+proptestescaso1975 <- sum(proptestescaso1975)/1000
+proptestescaso1975
+
+# 99%
+proptestescaso199 <- NA
+for(i in 1:1000) {
+  proptestescaso199 <- c(proptestescaso199,ifelse(as.numeric(testes[[i]]$statistic) >= valortabelaconover99, 1,0))
+}
+proptestescaso199 <- proptestescaso199[2:1001]
+proptestescaso199 <- sum(proptestescaso199)/1000
+proptestescaso199
+
+labels <- c("80%","85%","90%","95%","97,5%","99%")
+valores <- c(proptestescaso180,proptestescaso185,proptestescaso190,proptestescaso195,proptestescaso1975,proptestescaso199)
+proporcoesquantiscaso1 <- data.frame(valores,row.names = labels)
+proporcoesquantiscaso1 <- t(proporcoesquantiscaso1)
+proporcoesquantiscaso1 <- as.data.frame(proporcoesquantiscaso1)
+rownames(proporcoesquantiscaso1) <- "Proporção"
+#-------------------------------------------------------------------------------
+
+# QUANTIS DOS TESTES DO CASO 2
+
+# 80%
+proptestescaso280 <- NA
+for(i in 1:1000) {
+  proptestescaso280 <- c(proptestescaso280,ifelse(as.numeric(testes2[[i]]$statistic) >= valortabelaconover80, 1,0))
+}
+proptestescaso280 <- proptestescaso280[2:1001]
+proptestescaso280 <- sum(proptestescaso280)/1000
+proptestescaso280
+
+
+# 85%
+
+proptestescaso285 <- NA
+for(i in 1:1000) {
+  proptestescaso285 <- c(proptestescaso285,ifelse(as.numeric(testes2[[i]]$statistic) >= valortabelaconover85, 1,0))
+}
+proptestescaso285 <- proptestescaso285[2:1001]
+proptestescaso285 <- sum(proptestescaso285)/1000
+proptestescaso285
+
+
+# 90%
+proptestescaso290 <- NA
+for(i in 1:1000) {
+  proptestescaso290 <- c(proptestescaso290,ifelse(as.numeric(testes2[[i]]$statistic) >= valortabelaconover90, 1,0))
+}
+proptestescaso290 <- proptestescaso290[2:1001]
+proptestescaso290 <- sum(proptestescaso290)/1000
+proptestescaso290
+
+
+# 95%
+proptestescaso295 <- NA
+for(i in 1:1000) {
+  proptestescaso295 <- c(proptestescaso295,ifelse(as.numeric(testes2[[i]]$statistic) >= valortabelaconover95, 1,0))
+}
+proptestescaso295 <- proptestescaso295[2:1001]
+proptestescaso295 <- sum(proptestescaso295)/1000
+proptestescaso295
+
+# 97,5%
+proptestescaso2975 <- NA
+for(i in 1:1000) {
+  proptestescaso2975 <- c(proptestescaso2975,ifelse(as.numeric(testes2[[i]]$statistic) >= valortabelaconover975, 1,0))
+}
+proptestescaso2975 <- proptestescaso2975[2:1001]
+proptestescaso2975 <- sum(proptestescaso2975)/1000
+proptestescaso2975
+
+# 99%
+proptestescaso299 <- NA
+for(i in 1:1000) {
+  proptestescaso299 <- c(proptestescaso299,ifelse(as.numeric(testes2[[i]]$statistic) >= valortabelaconover99, 1,0))
+}
+proptestescaso299 <- proptestescaso299[2:1001]
+proptestescaso299 <- sum(proptestescaso299)/1000
+proptestescaso299
+
+valores2 <- c(proptestescaso280,proptestescaso285,proptestescaso290,proptestescaso295,proptestescaso2975,proptestescaso299)
+proporcoesquantiscaso2 <- data.frame(valores2,row.names = labels)
+proporcoesquantiscaso2 <- t(proporcoesquantiscaso2)
+proporcoesquantiscaso2 <- as.data.frame(proporcoesquantiscaso2)
+rownames(proporcoesquantiscaso2) <- "Proporção"
+# Proporções dos testes:
+
+#proporcoesquantiscaso1
+#proporcoesquantiscaso2
+
+```
+
+\newpage
+
+**CASO 1**
+
+Proporção dentre as 1000 amostras do **CASO 1** cuja estatística de teste é maior ou igual ao valor tabelado
+```{r tabela1, echo=FALSE, include=TRUE, message=FALSE }
+
+kable(proporcoesquantiscaso1)
+
+```
+
+Observamos que o valor encontrados na estatística de teste de cada amostra, repetido o teste para 1000 amostras geradas com os mesmos parâmetros, são bem conservadores no teste de Kolmogorov. Aqui neste caso, o primeiro grupo de 1000 amostras foi gerado conforme o parâmetro sugerido, enquanto o segundo grupo de 1000 amostras, gerado para comparar com o primeiro grupo uma a uma, foi gerado utilizando a média e desvio padrão dos valores sorteados na amostra 1 equivalente. Portanto, esperar-se-ia que um teste comparando essas amostras uma a uma, apresentaria uma aderência bem alta, quase absoluta, que não foi o resultado que este experimento observou.
+
+\newpage
+
+```{r prepgraficos1 , echo=FALSE, include=FALSE, message=FALSE, results='hide'}
+
+estatísticaskolmogorov1 <- NA
+for (i in 1:1000){
+  estatísticaskolmogorov1 <- c(estatísticaskolmogorov1,as.numeric(testes[[i]]$statistic))
+}
+estatísticaskolmogorov1 <- estatísticaskolmogorov1[2:1001]
+
+```
+
+Histograma
+```{r histograma1 , echo=FALSE, include=TRUE, message=FALSE}
+
+hist(estatísticaskolmogorov1
+     ,main="Histograma estatísticas de Kolmogorov observadas - Caso 1"
+     ,xlab="Valor da estatística de teste (0 a 1)"
+     ,ylab="Frequência"
+     )
+
+```
+
+*Boxplot*
+```{r boxplot1 , echo=FALSE, include=TRUE, message=FALSE}
+
+boxplot(estatísticaskolmogorov1
+        ,main="Boxplot estatísticas de Kolmogorov observadas"
+        ,xlab="Caso 1"
+        ,ylab="Valor da estatística de teste (0 a 1)"
+        )
+
+```
+
+\newpage
+
+**CASO 2**
+
+Proporção dentre as 1000 amostras do **CASO 2** cuja estatística de teste é maior ou igual ao valor tabelado
+```{r tabela2, echo=FALSE, include=TRUE, message=FALSE }
+
+kable(proporcoesquantiscaso2)
+
+```
+
+Observamos que o valor encontrados na estatística de teste de cada amostra, repetido o teste para 1000 amostras geradas com os mesmos parâmetros, são bem conservadores no teste de Kolmogorov. Aqui neste caso, o primeiro grupo de 1000 amostras foi gerado conforme o parâmetro sugerido, enquanto o segundo grupo de 1000 amostras, gerado para comparar com o primeiro grupo uma a uma, foi gerado da mesma forma que o primeiro, com os parâmetros aleatorizados dentro do intervalo sugerido pelo enunciado. Portanto, esperar-se-ia que um teste comparando essas amostras uma a uma, apresentaria uma aderência alta, possívelmente inferior ao que se esperaria observar no experimento do *caso 1*, mas ainda assim alta, que não foi o resultado que este experimento observou, apesar de fato observar uma aderência ligeiramente inferior se comparado ao *caso 1*.
+
+\newpage
+
+```{r prepgraficos2 , echo=FALSE, include=FALSE, message=FALSE, results='hide'}
+
+estatísticaskolmogorov2 <- NA
+for (i in 1:1000){
+  estatísticaskolmogorov2 <- c(estatísticaskolmogorov2,as.numeric(testes2[[i]]$statistic))
+}
+estatísticaskolmogorov2 <- estatísticaskolmogorov2[2:1001]
+
+```
+
+Histograma
+```{r histograma2 , echo=FALSE, include=TRUE, message=FALSE}
+
+hist(estatísticaskolmogorov2
+     ,main="Histograma estatísticas de Kolmogorov observadas - Caso 2"
+     ,xlab="Valor da estatística de teste (0 a 1)"
+     ,ylab="Frequência"
+     )
+
+```
+
+*Boxplot*
+```{r boxplot2 , echo=FALSE, include=TRUE, message=FALSE}
+
+boxplot(estatísticaskolmogorov2
+        ,main="Boxplot estatísticas de Kolmogorov observadas"
+        ,xlab="Caso 2"
+        ,ylab="Valor da estatística de teste (0 a 1)"
+        )
+
+```
+
+\newpage
+
+# **2.** Testes para normalidade: *Shapiro-Wilk* e *Anderson-Darling*
+
+## Escolha 5 amostras geradas anteriormente, e teste normalidade utilizando *Shapiro-Wilk* e *Anderson-Darling*.
+
+```{r testesSWeAD, echo=FALSE, include=FALSE, message=FALSE, results='hide'}
+
+testesSW <- list()
+testesAD <- list()
+valoressorteados <- 0
+for (i in 1:5){
+  
+sorteada <- sample(1:1000,1)
+# Apesar de improvável pelo número de possibilidades, quero me certificar que
+# não selecionar e testar a mesma amostra mais de 1 vez:
+if (sorteada %in% valoressorteados){
+  sorteada <- sample(1:1000,1)
+} else {
+  valoressorteados <- c(valoressorteados,sorteada)
+}
+
+testesSW[[i]] <- shapiro.test(amostras[[sorteada]])
+testesAD[[i]] <- ad.test(amostras[[sorteada]])
+
+}
+
+rm(valoressorteados,sorteada,i)
+
+```
+
+## Compare com os resultados anteriores e comente os resultados
+
+\vskip 1em
+
+Como nessa questão o número de testes é significativamente inferior, acredito ser apropriado apresentar os resultados um a um
+
+\vskip 1em
+
+**Testes *Shapiro-Wilk* **
+
+O primeiro teste *Shapiro-Wilk* observou estatística de teste **W=`r as.numeric(testesSW[[1]]$statistic)`**, com **p-valor=`r as.numeric(testesSW[[1]]$p.value)`**
+
+O segundo teste *Shapiro-Wilk* observou estatística de teste **W=`r as.numeric(testesSW[[2]]$statistic)`**, com **p-valor=`r as.numeric(testesSW[[2]]$p.value)`**
+
+O terceiro teste *Shapiro-Wilk* observou estatística de teste **W=`r as.numeric(testesSW[[3]]$statistic)`**, com **p-valor=`r as.numeric(testesSW[[3]]$p.value)`**
+
+O quarto teste *Shapiro-Wilk* observou estatística de teste **W=`r as.numeric(testesSW[[4]]$statistic)`**, com **p-valor=`r as.numeric(testesSW[[4]]$p.value)`**
+
+O quinto teste *Shapiro-Wilk* observou estatística de teste **W=`r as.numeric(testesSW[[5]]$statistic)`**, com **p-valor=`r as.numeric(testesSW[[5]]$p.value)`**
+
+\vskip 1em
+
+É bem direto inferir que, baseado nos valores **W** e **p-valor** encontrados, o teste de *Shapiro-Wilk* demonstra uma alta aderência entre a distribuição dos valores observados nas amostras sorteadas, com os valores esperados de uma distribuição normal.
+
+\vskip 3em
+
+**Testes *Anderson-Darling* **
+
+O primeiro teste *Anderson-Darling* observou estatística de teste **A=`r as.numeric(testesAD[[1]]$statistic)`**, com **p-valor=`r as.numeric(testesAD[[1]]$p.value)`**
+
+O segundo teste *Anderson-Darling* observou estatística de teste **A=`r as.numeric(testesAD[[2]]$statistic)`**, com **p-valor=`r as.numeric(testesAD[[2]]$p.value)`**
+
+O terceiro teste *Anderson-Darling* observou estatística de teste **A=`r as.numeric(testesAD[[3]]$statistic)`**, com **p-valor=`r as.numeric(testesAD[[3]]$p.value)`**
+
+O quarto teste *Anderson-Darling* observou estatística de teste **A=`r as.numeric(testesAD[[4]]$statistic)`**, com **p-valor=`r as.numeric(testesAD[[4]]$p.value)`**
+
+O quinto teste *Anderson-Darling* observou estatística de teste **A=`r as.numeric(testesAD[[5]]$statistic)`**, com **p-valor=`r as.numeric(testesAD[[5]]$p.value)`**
+
+\vskip 1em
+
+É bem direto inferir que, baseado nos valores **A** e **p-valor** encontrados, o teste de *Anderson-Darling* demonstra ser mais conservador no sentido de confirmar uma aderência à distribuição normal nas distribuições observadas nas amostras sorteadas se comparado ao teste *Shapiro-Wilk*, mas ainda assim nos testes realizados, os resultados demonstram uma boa aderência à normalidade.
+
+\vskip 2em
+
+Se compararmos os resultados de aderência da questão 1 com a questão 2, observamos que no caso da segunda, as aderências observadas foram muito mais altas, principalmente se considerar o teste *Shapiro-Wilk*, que é muito apropriado para essas amostras de tamanho **n=15** que trabalhamos no decorrer dessa atividade.
+
+Portanto, tanto os testes de *Kolmogorov* quanto os de *Anderson-Darling* demonstram talvez não serem os testes mais apropriados para se trabalhar com amostras de tamanho tão pequeno, apesar de serem muito úteis em amostras com tamanho maior.
