@@ -52,10 +52,10 @@ amostra$ANO_NASC <- factor(amostra$ANO_NASC)
 #-------------------------------------------------------------------------------
 #Gerando amostras
 
-#set.seed()
+set.seed(150167636)
 amostra20 <- sample_n(amostra,20)
 
-#set.seed()
+set.seed(150167636)
 amostra200 <- sample_n(amostra,200)
 
 #-------------------------------------------------------------------------------

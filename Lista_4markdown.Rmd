@@ -1,0 +1,403 @@
+---
+title: ''
+subtitle: ""
+author: ""
+date: ""
+
+output:
+  pdf_document:
+  fig_crop: false
+highlight: tango
+number_sections: false
+fig_caption: true
+keep_tex: true
+includes:
+  in_header: Estilo.sty
+classoption: a4paper
+always_allow_html: true
+---
+  
+  
+\begin{center}
+{\Large
+  DEPARTAMENTO DE ESTATÍSTICA} \\
+\vspace{0.5cm}
+\begin{figure}[!t]
+\centering
+\includegraphics[width=9cm, keepaspectratio]{logo-UnB.eps}
+\end{figure}
+\vskip 1em
+{\large
+  `r format(Sys.time(), '%d %B %Y')`}
+\vskip 3em
+{\LARGE
+  \textbf{Atividade 4.1: Lista de exercícios 4}} \\
+\vskip 1em
+{\Large
+  Profª. Ana Maria Nogales} \\
+\vskip 1em
+{\Large
+  Métodos Estatísticos 2} \\
+\vskip 1em
+{\Large
+  Aluno: Bruno Gondim Toledo | Matrícula: 15/0167636} \\
+\vskip 1em
+\end{center}
+
+\vskip 5em
+
+```{r setup, include=FALSE}
+if (!require("pacman")) install.packages("pacman")
+p_load(knitr,sfsmisc,nortest,twosamples,BSDA)
+```
+
+\center
+**LISTA DE EXERCÍCIOS N. 4**
+\vskip 1em
+**COMPARANDO POPULAÇÕES – VARIÁVEIS QUANTITATIVAS**
+\raggedright
+\vskip 3em
+
+\newpage
+
+1) Faça os seguintes exercícios do capítulo 13 do livro “Estatística Básica” de Bussab, W e Morettin, P, 9a. Edição, 2017 (ou edição anterior)
+
+a) n. 4
+b) n. 9 e 10. Nos dois exercícios utilizar os testes t-Student, Mann-Whitney, KolmogorovSmirnov e Cramér-von Mises. Comente os resultados.
+c) n. 20 e 21. Para o mesmo conjunto de dados utilizar o teste dos sinais. Comente os resultados.
+
+2) Selecionou-se uma amostra aleatória de 20 condutores de automóveis com o objetivo de verificar se o tempo de reação era afetado pelo consumo de álcool. Foi medido o tempo de reação a um mesmo estímulo de cada condutor antes e depois de consumir uma dose de bebida alcoólica. Os tempos de reação antes e depois do consumo da bebida estão na tabela abaixo:
+
+```{r tabela, include=FALSE}
+Condutor <- c(1:20)
+
+Antes <- c(0.68,0.64,0.68,0.82,0.58,0.80,0.72,0.65,0.84,0.73,0.65,0.59,0.78,0.67,0.65,0.76,0.61,0.86,0.74,0.88)
+  
+Depois <- c(0.73,0.62,0.66,0.92,0.68,0.87,0.77,0.70,0.88,0.79,0.72,0.60,0.78,0.66,0.68,0.77,0.72,0.86,0.72,0.97)
+
+tabela <- as.data.frame(Condutor)
+tabela$Antes <- NA
+tabela$Depois <- NA
+tabela$Antes <- Antes
+tabela$Depois <- Depois
+```
+
+```{r kable, echo=FALSE}
+kable(tabela)
+```
+
+Você diria que o álcool afeta o tempo de reação? Apresente três tipos de testes e comente os resultados.
+
+\newpage
+
+# 1)
+## a)
+
+$h_0)\sigma_A^2=\sigma_B^2$
+
+$h_1)\sigma_A^2<\sigma_B^2$
+
+$s_A^2 = 0,0412$
+
+$s_B^2 = 0,1734$
+
+População com variância desconhecida
+
+$$W = \frac{S_A^2}{S_A^2} \sim F(n-1,m-1)$$
+
+$Fixar \hspace{1 mm} \alpha = 0,05$
+
+n = 21
+m = 17
+
+Resultados:
+
+$$\frac{1}{D} \approx 0,46$$
+F = 2,28 (5%)
+
+$$W = \frac{S_A^2}{S_B^2} = \frac{0,0412}{0,1734} \approx 0,23 \in região \hspace{1 mm} crítica$$
+
+Logo, rejeitamos a hipótese nula. Ou seja, existe diferença na qualidade das fábricas, sendo a fábrica A "melhor".
+
+$$I.C.: \hspace{5 mm} f_1 \frac{S_B^2}{S_A^2} < \frac{\sigma_B^2}{\sigma_A^2} < f_2 \frac{S_B^2}{S_A^2}$$
+$$\frac{S_B^2}{S_A^2} \Rightarrow
+\begin{cases}
+Se = 1 ; \hspace{5 mm} S_A^2 &= S_B^2 \\ 
+Se < 1 ; \hspace{5 mm} S_A^2 &< S_B^2 \\
+Se > 1 ; \hspace{5 mm} S_A^2 &> S_B^2
+\end{cases}$$
+
+I.C. 95% =
+$$\begin{cases}
+L_{inf}(2,5\%) \approx 0,39 \Rightarrow (0,39 \cdot 0,23) \approx 0,0897 \\
+L_{sup}(2,5\%) \approx 2,68 \Rightarrow (2,68 \cdot 0,23) \approx 0,6164 
+\end{cases}$$
+
+Ou seja, a variância de A é no máximo 61,64\% da variância de B, e no mínimo 8,97\%.
+
+\newpage
+
+## b)
+### nº 9) Comparação de salário entre dois grupos
+
+```{r tabela2, echo=FALSE}
+options(knitr.kable.NA = '')
+
+administradores <- c(8.1,9.8,8.7,10,10.2,8.2,8.7,10.1)
+liberaist <- c(6.6,10.3,10.8,12.9,9.2,12.3,7.0,NA)
+tabela2 <- as.data.frame(liberaist)
+tabela2$administradores <- NA
+tabela2$administradores <- administradores
+tabela2 <- as.data.frame(t(tabela2))
+rownames(tabela2) <- c("Liberais","Administradores")
+colnames(tabela2) <- c("","","","","","","","")
+
+kable(tabela2)
+```
+
+Tomando A = Liberais e B = Administradores
+
+$h_0)\mu_A=\mu_B$
+
+$h_1)\mu_A\neq\mu_B$
+
+
+
+$\overline{X}_A = 9,871$
+
+$\overline{X}_B = 9,238$
+
+$S_A^2=5,919$
+
+$S_B^2=0,814$
+
+#### Teste: T - *student*
+
+Estatística de teste: Variância populacional desconhecida;
+testar se $\sigma_A^2=\sigma_B^2$ à partir de $S_A^2$ e $S_B^2$.
+
+Teste de igualdade das variâncias:
+$h_0)\sigma_A^2=\sigma_B^2$
+
+$h_1)\sigma_A^2\neq\sigma_B^2$
+
+Estatística de teste: $W = \frac{S_A^2}{S_B^2} = \frac{5,919}{0,814} = 7,271\sim F(n-1,m-1)g.l. = F(6,7);\hspace{1 mm} à \hspace{1 mm}\alpha=0,95 \Rightarrow 3,866$
+
+Conclusão: As variâncias são diferentes. Logo, escolhemos um teste em que considere este fato.
+
+Voltando a primeira hipótese;
+
+$h_0)\mu_A=\mu_B$
+
+$h_1)\mu_A\neq\mu_B$
+
+#### Teste t para variâncias diferentes = 
+
+$$T_{(v)} = \frac{\overline{X}-\overline{Y}}{\sqrt{\left(\frac{S_1^2}{n_1}\right)+\left(\frac{S_2^2}{n_2}\right)}}=\frac{0,634}{0,97331...}\approx0,6513$$
+
+\vskip 2em
+
+$$V=\frac{\left(\frac{S_A^2}{n_1}+\frac{S_B^2}{n_2}\right)^2}{\frac{\left(\frac{S_A^2}{n1}\right)^2}{n_1-1}+\frac{{\left(\frac{S_B^2}{n2}\right)^2}}{n_2-1}}\approx7,44\approx8 \hspace{1 mm} g.l.$$
+$\begin{cases}L_{inf}(2,5\%)\approx-2,31\\L_{sup}(2,5\%)\approx2,31\\\\T=0,6513\end{cases}$
+
+Portanto, aceitamos $H_0$ (a média é igual)
+
+\newpage
+
+#### Teste de *Mann-Whitney*: Dados $\underline{não}$ são normais
+
+```{r tabela3, echo=FALSE}
+options(knitr.kable.NA = '')
+
+administradores2 <- c(sort(administradores),NA,NA,NA,NA,NA,NA,NA)
+
+liberaist2 <- c(sort(liberaist),NA,NA,NA,NA,NA,NA,NA,NA)
+reunida <- c("6,6(L)","7(L)","8,1(A)","8,2(A)","8,7(A)","8,7(A)","9,2(L)",
+             "9,8(A)","10(A)","10,1(A)","10,2(A)","10,3(L)","10,8(L)","12,3(L)",
+             "12,9(L)")
+posto <- c(1,2,3,4,5.5,5.5,7,8,9,10,11,12,13,14,15)
+
+tabela3 <- as.data.frame(liberaist2)
+tabela3$administradores <- NA
+tabela3$administradores <- administradores2
+tabela3$reunida <- NA
+tabela3$reunida <- reunida
+tabela3$posto <- NA
+tabela3$posto <- posto
+
+colnames(tabela3) <- c("Liberais","Administradores","Reunida e classificada","Posto")
+
+kable(tabela3)
+
+```
+
+R(L) = 1,2,7,12,13,14,15
+R(A) = 3,4,5.5,5.5,8,9,10,11
+
+$\sum R(L)=64$
+
+$\sum R(A)=56$
+
+Olhando a tabela, com $(n=7,m=8) \Rightarrow à \hspace{1mm}\alpha=0,01\Rightarrow36$. Se $\sum<$ que o valor tabelado, rejeitamos a hipótese $H_1)$ e aceitamos $H_0)$.
+\vskip 1em
+Logo, não há concentração de valores de alguma variável nos valores menores ou maiores. Portanto, aceitamos $H_0)$.
+
+$$\begin{aligned}U_s = W_s - \frac{1}{2}m(m+1)&=\\
+56-\frac{1}{2}\cdot8(8+1)&=\\
+56-4(9)&=20
+\end{aligned}$$
+
+conferindo a tabela U c/ $n=7$ e $m=8$
+
+$P[U_s<W]\approx0,1984=$ p-valor $\Rightarrow$ aceita-se $H_0$
+
+#### Teste *Kolmogorov-Smirnov*
+
+```{r 1btesteKS, echo=FALSE}
+# Dados:
+liberais <- c(6.6,10.3,10.8,12.9,9.2,12.3,7.0)
+administradores <- c(8.1,9.8,8.7,10,10.2,8.2,8.7,10.1)
+
+ks.test(x=liberais,y=administradores)
+```
+
+#### Teste *Cramér-von Mises*
+
+```{r 1btesteCVM, echo=FALSE}
+# Teste Cramer-von Mises
+cvm_test(liberais, administradores)
+```
+
+\newpage
+
+### nº 10) Comparação de fertilizantes entre dois grupos
+
+$H_0$: Não há evidências de que o novo fertilizante aumente a produção. 
+
+$h_1$: Há evidências de que o novo fertilizante aumente a produção. 
+
+#### Teste *t student*
+
+```{r 1b2testetstudent, echo=FALSE}
+# Dados:
+controle <- c(7.1,6,8,7,6.6,7.4,7,7,6.9,6.8)
+tratamento <- c(6.9,6.8,7.5,6.8,6.9,6.8,6.8,6.8,6.7,6.6)
+
+t.test(x=tratamento,
+       y=controle,
+       alternative="greater",
+       mu=0,
+       conf.level=.95)
+```
+
+#### Teste de *Mann Whitney*
+
+```{r 1b2testemannwhitney, echo=FALSE,message=FALSE,warning=FALSE}
+wilcox.test(x = controle,
+            y = tratamento,
+            alternative = "greater",
+            mu = 0, 
+            conf.int = 0.95, 
+            conf.level = 0.95)
+```
+
+#### Teste *Kolmogorov-Smirnov*
+
+```{r 1b2bKS,echo=FALSE}
+ks.test(x=controle,
+        y=tratamento,
+        alternative="greater")
+```
+
+#### Teste *Cramér-von Mises*
+
+```{r 1b2bCVM,echo=FALSE}
+cvm_test(controle, tratamento)
+```
+
+**Conclusão:** Aceita-se $H_0$. Não há evidências de que o novo fertilizante aumente a produção. 
+
+\newpage
+
+## c)
+### 20) Comparação da eficácia de cartazes entre dois grupos pareados
+
+$h_0$: O cartaz não produz um aumento na médias das vendas
+
+$h_1$: O cartaz produz um aumento na médias das vendas
+
+#### Teste *t-student* para amostras pareadas
+```{r 1c1t, echo=FALSE,message=FALSE,warning=FALSE}
+# Dados:
+scartaz <- c(13,18,14,16,19,12,22)
+ccartaz <- c(16,24,18,14,26,17,29)
+
+t.test(x=ccartaz,
+       y=scartaz,
+       alternative="greater",
+       mu=0,
+       conf.level=.95,
+       paired=TRUE)
+```
+
+#### Teste dos sinais
+```{r 1c1sinais, echo=FALSE,message=FALSE,warning=FALSE}
+SIGN.test(ccartaz, 
+          scartaz, 
+          md=0,
+          alternative="greater",
+          conf.level = 0.95)
+```
+
+Como **t** e **s** pertencem à região crítica, rejeitamos $H_0$. Ou seja, há evidências de que o cartaz produz um efeito positivo nas vendas médias.
+
+### 21) Resolva o problema anterior, usando o teste dos postos sinalizados de *Wilcoxon*.
+
+```{r 1c2w, echo=FALSE,message=FALSE,warning=FALSE}
+wilcox.test(ccartaz,
+            scartaz,
+            paired=TRUE,
+            conf.level=.95) 
+```
+
+Como **p-valor < 0.05** e **V > 13**, rejeitamos $H_0$. Ou seja, há evidências de que o cartaz produz um efeito positivo nas vendas médias. 
+
+\newpage
+
+# 2)
+
+$h_0$: Álcool não aumenta o tempo de reação
+
+$h_1$: Álcool aumenta o tempo de reação
+
+## Teste de Mann-Whitney para amostras pareadas
+```{r 2w, echo=FALSE,message=FALSE,warning=FALSE}
+wilcox.test(Antes,
+            Depois,
+            paired=TRUE,
+            conf.level=.95) 
+```
+
+## Teste *t-student* para amostras pareadas
+```{r 2t, echo=FALSE,message=FALSE,warning=FALSE}
+t.test(x=Antes,
+       y=Depois,
+       alternative="greater",
+       mu=0,
+       conf.level=.95,
+       paired=TRUE)
+```
+
+## Teste *Kolmogorov-Smirnov* para duas amostras
+```{r 2ks, echo=FALSE,message=FALSE,warning=FALSE}
+ks.test(x=Antes,
+        y=Depois,
+        alternative="greater")
+```
+
+## Teste de *Cramér-von Mises* para duas amostras
+```{r 2cvm, echo=FALSE,message=FALSE,warning=FALSE}
+cvm_test(Antes,Depois)
+```
+
+Baseado no resultado dos testes, a hipótese nula é aceita. Portanto, para esse conjunto de dados, o álcool não aumentou o tempo de reação dos condutores.
