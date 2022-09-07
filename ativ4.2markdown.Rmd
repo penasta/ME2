@@ -1,43 +1,73 @@
-#-------------------------------------------------------------------------------
+---
+title: ''
+subtitle: ""
+author: ""
+date: ""
 
-# 1. A partir de sua amostra dos resultados do SAEB 9o. ano, considere amostras de tamanho 20 e 200. Para cada amostra, explore a associação entre as seguintes variáveis:
-#  
-#   NOTA_MT e LOCALIZAÇÃO (Urbana e Rural)
-#
-#   NOTA_LP e Ano de nascimento (2001 ou antes ; 2002 ou depois)
-#
-# Para avaliar essas relações construa os gráficos adequados e medidas de posição 
-# e variabilidade segundo categorias das variáveis qualitativas. Você diria que 
-# a proficiência em matemática é maior em escolas urbanas? Existe diferença entre 
-# as proficiências em língua portuguesa segundo grupo de idade do estudante? 
-# Considere os testes: t de Student, Wilcoxon-Mann-Whitney e Kolmogorov-Smirnov.
-# (Não se esqueça de testar normalidade e homocedasticidade - fazer referência, 
-# se vc já analisou esses aspectos anteriormente)
-#
-# 2. Para a amostra de tamanho 20, verifique se há diferença entre as notas de língua portuguesa e matemática. Considere os testes: t de Student, Wilcoxon e Sinais. Comente os resultados.
+output:
+  pdf_document:
+  fig_crop: false
+highlight: tango
+number_sections: false
+fig_caption: true
+keep_tex: true
+includes:
+  in_header: Estilo.sty
+classoption: a4paper
+always_allow_html: true
+---
+  
+  
+\begin{center}
+{\Large
+  DEPARTAMENTO DE ESTATÍSTICA} \\
+\vspace{0.5cm}
+\begin{figure}[!t]
+\centering
+\includegraphics[width=9cm, keepaspectratio]{logo-UnB.eps}
+\end{figure}
+\vskip 1em
+{\large
+  `r format(Sys.time(), '%d %B %Y')`}
+\vskip 3em
+{\LARGE
+  \textbf{Atividade 4.2 - Análise de dados - comparação entre duas populações}} \\
+\vskip 1em
+{\Large
+  Profª. Ana Maria Nogales} \\
+\vskip 1em
+{\Large
+  Métodos Estatísticos 2} \\
+\vskip 1em
+{\Large
+  Aluno: Bruno Gondim Toledo | Matrícula: 15/0167636} \\
+\vskip 1em
+\end{center}
 
-#-------------------------------------------------------------------------------
+\vskip 5em
 
-# Carregando pacotes
-
+```{r setup, include=FALSE}
 if (!require("pacman")) install.packages("pacman")
-p_load(installr,readr,tidyverse,nortest,twosamples,BSDA,sfsmisc,DescTools)
-# updateR()
+p_load(knitr,readr,tidyverse,nortest,twosamples,BSDA,sfsmisc,DescTools)
+```
 
-#-------------------------------------------------------------------------------
 
-# Carregando dados
+1. A partir de sua amostra dos resultados do SAEB 9o. ano, considere amostras de tamanho 20 e 200. Para cada amostra, explore a associação entre as seguintes variáveis:
+
+* NOTA_MT e LOCALIZAÇÃO (Urbana e Rural)
+
+* NOTA_LP e Ano de nascimento (2001 ou antes ; 2002 ou depois)
+
+Para avaliar essas relações construa os gráficos adequados e medidas de posição e variabilidade segundo categorias das variáveis qualitativas. Você diria que a proficiência em matemática é maior em escolas urbanas? Existe diferença entre as proficiências em língua portuguesa segundo grupo de idade do estudante? Considere os testes: t de Student, Wilcoxon-Mann-Whitney e Kolmogorov-Smirnov. (Não se esqueça de testar normalidade e homocedasticidade - fazer referência, se vc já analisou esses aspectos anteriormente)
+
+2. Para a amostra de tamanho 20, verifique se há diferença entre as notas de língua portuguesa e matemática. Considere os testes: t de Student, Wilcoxon e Sinais. Comente os resultados.
+
+\newpage
+
+```{r prep, echo=FALSE,message=FALSE,warning=FALSE}
 
 amostra <- read_csv("./banco/amostra_150167636.csv")
-
-# Dessa vez, quero garantir que as subamostras não terão valores NA
 amostra <- na.omit(amostra)
-
-#-------------------------------------------------------------------------------
-
-# ETL e seleção de variáveis de interesse
-# Variáveis de interesse: NOTA_MT LOCALIZAÇÃO NOTA_LP Ano de nascimento (2001 ou antes ; 2002 ou depois)
-# LOCALIZACAO ; NOTA_MT ; NOTA_LP ; ANO_NASC .
 
 amostra$ANO_NASC<-replace(amostra$ANO_NASC, amostra$ANO_NASC=="1998 ou antes",1999) 
 amostra$ANO_NASC<-replace(amostra$ANO_NASC, amostra$ANO_NASC=="2005 ou depois",2004)
@@ -52,29 +82,12 @@ amostra <- amostra %>%
 amostra$LOCALIZACAO <- factor(amostra$LOCALIZACAO)
 amostra$ANO_NASC <- factor(amostra$ANO_NASC)
 
-#-------------------------------------------------------------------------------
-
-#Gerando amostras
-
 set.seed(150167636)
 amostra20 <- sample_n(amostra,20)
 
 set.seed(150167636)
 amostra200 <- sample_n(amostra,200)
 
-#-------------------------------------------------------------------------------
-
-# Testes: t de Student, Wilcoxon-Mann-Whitney e Kolmogorov-Smirnov.
-# Testar normalidade e homocedasticidade
-# Construir gráficos adequados e medidas de posição e variabilidade segundo categorias das variáveis qualitativas.
-
-# Dando uma olhada nos dados
-summary(amostra)
-summary(amostra20)
-summary(amostra200)
-
-#-------------------------------------------------------------------------------
-# Transformações para trabalhar
 rural20 <- amostra20 %>%
   filter(LOCALIZACAO == 'Rural')
 urbana20 <- amostra20 %>%
@@ -85,8 +98,6 @@ rural200 <- amostra200 %>%
 urbana200 <- amostra200 %>%
   filter(LOCALIZACAO == 'Urbana')
 
-#
-
 antes20 <- amostra20 %>%
   filter(ANO_NASC == '2001 ou antes')
 depois20 <- amostra20 %>%
@@ -96,13 +107,13 @@ antes200 <- amostra200 %>%
   filter(ANO_NASC == '2001 ou antes')
 depois200 <- amostra200 %>%
   filter(ANO_NASC == '2002 ou depois')
-#-------------------------------------------------------------------------------
 
-# Considere os testes: t de Student, Wilcoxon-Mann-Whitney e Kolmogorov-Smirnov.
+```
 
-#-------------------------------------------------------------------------------
+# Testes: Proeficiência em matemática pela localização da escola:
 
-# Proeficiência em matemática pela localização da escola:
+## Amostra n=20
+```{r 1testesMAT20, echo=FALSE,message=FALSE,warning=FALSE}
 # Amostra n=20
 t.test(x=rural20$NOTA_MT,
        y=urbana20$NOTA_MT,
@@ -118,7 +129,11 @@ ks.test(x=rural20$NOTA_MT,
         y=urbana20$NOTA_MT,
         alternative="two.sided")
 
-# Amostra n=200
+```
+
+## Amostra n=200
+```{r 1testesMAT200, echo=FALSE,message=FALSE,warning=FALSE}
+
 t.test(x=rural200$NOTA_MT,
        y=urbana200$NOTA_MT,
        alternative="two.sided",
@@ -133,10 +148,15 @@ ks.test(x=rural200$NOTA_MT,
         y=urbana200$NOTA_MT,
         alternative="two.sided")
 
-#-------------------------------------------------------------------------------
+```
+
+\newpage
 
 # Proeficiência em língua portuguesa pelo ano de nascimento:
-# Amostra n=20
+
+## Amostra n=20
+```{r 1testesLP20, echo=FALSE,message=FALSE,warning=FALSE}
+
 t.test(x=antes20$NOTA_LP,
        y=depois20$NOTA_LP,
        alternative="two.sided",
@@ -151,7 +171,11 @@ ks.test(x=antes20$NOTA_LP,
         y=depois20$NOTA_LP,
         alternative="two.sided")
 
-# Amostra n=200
+```
+
+## Amostra n=200
+```{r 1testesLP200, echo=FALSE,message=FALSE,warning=FALSE}
+
 t.test(x=antes200$NOTA_LP,
        y=depois200$NOTA_LP,
        alternative="two.sided",
@@ -166,17 +190,14 @@ ks.test(x=antes200$NOTA_LP,
         y=depois200$NOTA_LP,
         alternative="two.sided")
 
-#-------------------------------------------------------------------------------
+```
 
-# Todos os testes confirmam a aceitação de h0 em todos os cenários estudados.
+# Gráficos
 
-#-------------------------------------------------------------------------------
+## Amostra n=20, variável Nota em língua portuguesa
+### Ano de nascimento indiscriminado
+``` {r Amostra20LP, echo=FALSE,message=FALSE,warning=FALSE}
 
-# Alguns gráficos:
-
-#-------------------------------------------------------------------------------
-
-# Amostra n=20, variável Nota em língua portuguesa
 hist(amostra20$NOTA_LP
      ,main="Histograma Notas em Língua Portuguesa - Amostra n=20"
      ,xlab="Nota"
@@ -192,8 +213,11 @@ qqnorm(amostra20$NOTA_LP
 )
 qqline(amostra20$NOTA_LP)
 
-# Amostra n=20, variável Nota em língua portuguesa
-# Nascidos em 2001 ou antes
+```
+
+### Nascidos em 2001 ou antes
+``` {r Amostra20LPantes, echo=FALSE,message=FALSE,warning=FALSE}
+
 hist(antes20$NOTA_LP
      ,main="Histograma Notas em Língua Portuguesa - Amostra n=20"
      ,xlab="Nota"
@@ -209,8 +233,11 @@ qqnorm(antes20$NOTA_LP
 )
 qqline(antes20$NOTA_LP)
 
-# Amostra n=20, variável Nota em língua portuguesa
-# Nascidos em 2002 ou depois
+```
+
+### Nascidos em 2002 ou depois
+``` {r Amostra20LPdepois, echo=FALSE,message=FALSE,warning=FALSE}
+
 hist(depois20$NOTA_LP
      ,main="Histograma Notas em Língua Portuguesa - Amostra n=20"
      ,xlab="Nota"
@@ -226,9 +253,12 @@ qqnorm(depois20$NOTA_LP
 )
 qqline(depois20$NOTA_LP)
 
-#-------------------------------------------------------------------------------
+```
 
-# Amostra n=200, variável Nota em língua portuguesa
+## Amostra n=200, variável Nota em língua portuguesa
+### Ano de nascimento indiscriminado
+``` {r Amostra200LP, echo=FALSE,message=FALSE,warning=FALSE}
+
 hist(amostra200$NOTA_LP
      ,main="Histograma Notas em Língua Portuguesa - Amostra n=200"
      ,xlab="Nota"
@@ -244,8 +274,11 @@ qqnorm(amostra200$NOTA_LP
 )
 qqline(amostra200$NOTA_LP)
 
-# Amostra n=200, variável Nota em língua portuguesa
-# Nascidos em 2001 ou antes
+```
+
+### Nascidos em 2001 ou antes
+``` {r Amostra200LPantes, echo=FALSE,message=FALSE,warning=FALSE}
+
 hist(antes200$NOTA_LP
      ,main="Histograma Notas em Língua Portuguesa - Amostra n=200"
      ,xlab="Nota"
@@ -261,8 +294,11 @@ qqnorm(antes200$NOTA_LP
 )
 qqline(antes200$NOTA_LP)
 
-# Amostra n=200, variável Nota em língua portuguesa
-# Nascidos em 2002 ou depois
+```
+
+### Nascidos em 2002 ou depois
+``` {r Amostra200LPdepois, echo=FALSE,message=FALSE,warning=FALSE}
+
 hist(depois200$NOTA_LP
      ,main="Histograma Notas em Língua Portuguesa - Amostra n=200"
      ,xlab="Nota"
@@ -278,9 +314,12 @@ qqnorm(depois200$NOTA_LP
 )
 qqline(depois200$NOTA_LP)
 
-#-------------------------------------------------------------------------------
+```
 
-# Amostra n=20, variável Nota em Matemática
+## Amostra n=20, variável Nota em Matemática
+### Localização da escola indiscriminada
+``` {r Amostra20MT, echo=FALSE,message=FALSE,warning=FALSE}
+
 hist(amostra20$NOTA_MT
      ,main="Histograma Notas em Matemática - Amostra n=20"
      ,xlab="Nota"
@@ -296,8 +335,11 @@ qqnorm(amostra20$NOTA_MT
 )
 qqline(amostra20$NOTA_MT)
 
-# Amostra n=20, variável Nota em Matemática
-# Escolas rurais
+```
+
+### Escolas rurais
+``` {r Amostra20MTrurais, echo=FALSE,message=FALSE,warning=FALSE}
+
 hist(rural20$NOTA_MT
      ,main="Histograma Notas em Matemática - Amostra n=20"
      ,xlab="Nota"
@@ -313,8 +355,11 @@ qqnorm(rural20$NOTA_MT
 )
 qqline(rural20$NOTA_MT)
 
-# Amostra n=20, variável Nota em Matemática
-# Escolas urbanas
+```
+
+### Escolas urbanas
+``` {r Amostra20MTurbanas, echo=FALSE,message=FALSE,warning=FALSE}
+
 hist(urbana20$NOTA_MT
      ,main="Histograma Notas em Matemática - Amostra n=20"
      ,xlab="Nota"
@@ -330,9 +375,12 @@ qqnorm(urbana20$NOTA_MT
 )
 qqline(urbana20$NOTA_MT)
 
-#-------------------------------------------------------------------------------
+```
 
-# Amostra n=200, variável Nota em Matemática
+## Amostra n=200, variável Nota em Matemática
+### Localização da escola indiscriminada
+``` {r Amostra200MT, echo=FALSE,message=FALSE,warning=FALSE}
+
 hist(amostra200$NOTA_MT
      ,main="Histograma Notas em Matemática - Amostra n=200"
      ,xlab="Nota"
@@ -348,8 +396,11 @@ qqnorm(amostra200$NOTA_MT
 )
 qqline(amostra200$NOTA_MT)
 
-# Amostra n=200, variável Nota em Matemática
-# Escolas rurais
+```
+
+### Escolas rurais
+``` {r Amostra200MTrurais, echo=FALSE,message=FALSE,warning=FALSE}
+
 hist(rural200$NOTA_MT
      ,main="Histograma Notas em Matemática - Amostra n=200"
      ,xlab="Nota"
@@ -365,8 +416,11 @@ qqnorm(rural200$NOTA_MT
 )
 qqline(rural200$NOTA_MT)
 
-# Amostra n=200, variável Nota em Matemática
-# Escolas urbanas
+```
+
+### Escolas urbanas
+``` {r Amostra200MTurbanas, echo=FALSE,message=FALSE,warning=FALSE}
+
 hist(urbana200$NOTA_MT
      ,main="Histograma Notas em Matemática - Amostra n=200"
      ,xlab="Nota"
@@ -382,34 +436,64 @@ qqnorm(urbana200$NOTA_MT
 )
 qqline(urbana200$NOTA_MT)
 
-#-------------------------------------------------------------------------------
+```
+
+\newpage
 
 # Testando a normalidade das variáveis NOTA_MT e NOTA_LP
-# Testes: | Qui-quadrado | Shapiro-Wilk | Anderson-Darling |
-# OBS: A normalidade desses dados foi melhor explorada nos exercícios anteriores.
-# aqui se encontra apenas um resumo, com o resultado dos testes de aderência.
 
-# Qui-quadrado: [OBS: Não é um bom teste para as amostras n=20]
+## Testes: 
+
+\begin{enumerate}
+\item \textbf{Qui-quadrado}
+\item \textbf{Shapiro-Wilk}
+\item \textbf{Anderson-Darling}
+\end{enumerate}
+
+## OBS: A normalidade desses dados foi melhor explorada nos exercícios anteriores. Aqui se encontra apenas um resumo, com o resultado dos testes de aderência.
+
+### Qui-quadrado: [OBS: Não é um bom teste para as amostras n=20]
+
+```{r tchisqn, echo=FALSE,message=FALSE,warning=FALSE}
+
 PearsonTest(x=amostra20$NOTA_LP)
 PearsonTest(x=amostra200$NOTA_LP)
 PearsonTest(x=amostra20$NOTA_MT)
 PearsonTest(x=amostra200$NOTA_MT)
 
-# Shapiro-Wilk:
+```
+
+\newpage
+
+### Shapiro-Wilk:
+
+```{r tswn, echo=FALSE,message=FALSE,warning=FALSE}
+
 shapiro.test(x=amostra20$NOTA_LP)
 shapiro.test(x=amostra200$NOTA_LP)
 shapiro.test(x=amostra20$NOTA_MT)
 shapiro.test(x=amostra200$NOTA_MT)
 
-#Anderson-Darling
+```
+
+### Anderson-Darling:
+
+```{r tadn, echo=FALSE,message=FALSE,warning=FALSE}
+
 ad.test(x=amostra20$NOTA_LP)
 ad.test(x=amostra200$NOTA_LP)
 ad.test(x=amostra20$NOTA_MT)
 ad.test(x=amostra200$NOTA_MT)
 
-#-------------------------------------------------------------------------------
+```
+
+Para uma análise mais aprofundada acerca da normalidade, favor conferir minhas atividades [2.2](https://github.com/penasta/ME2/blob/master/ativ2.2markdown.pdf), [3.2](https://github.com/penasta/ME2/blob/master/markdownatividade3%2C2.pdf) e [3.3](https://github.com/penasta/ME2/blob/master/MarkdownAtiv33.pdf).
+
+\newpage
 
 # Testando a homocedasticidade das variáveis NOTA_MT e NOTA_LP
+```{r homocedasticidade, echo=FALSE,message=FALSE,warning=FALSE}
+
 var.test(x=rural20$NOTA_MT,
          y=urbana20$NOTA_MT,
          alternative = "two.sided")
@@ -422,11 +506,21 @@ var.test(x=antes200$NOTA_LP,
 var.test(x=antes20$NOTA_LP,
          y=depois20$NOTA_LP,
          alternative = "two.sided")
-# Portando, os dados apresentam homocedasticidade.
 
-#-------------------------------------------------------------------------------
+```
+
+**Portando, os dados apresentam homocedasticidade.**
+
 # Para a amostra n=20, Comparar as variáveis NOTA_MT e NOTA_LP pareadas.
-# Testes: t de Student, Wilcoxon e Sinais. Comentar.
+
+## Testes: 
+\begin{enumerate}
+\item \textbf{t de Student}
+\item \textbf{Wilcoxon}
+\item \textbf{Sinais}
+\end{enumerate}
+
+```{r pareadas, echo=FALSE,message=FALSE,warning=FALSE}
 
 t.test(x=amostra20$NOTA_MT,
        y=amostra20$NOTA_LP,
@@ -446,4 +540,6 @@ SIGN.test(amostra20$NOTA_MT,
           alternative="greater",
           conf.level = 0.95)
 
-#------------------------------------------------------------------------------
+```
+
+Todos os testes divergem da região de aceitação, evidenciando que a nota em língua portuguesa não influencia na nota em matemática no mesmo aluno, e vice-versa.
