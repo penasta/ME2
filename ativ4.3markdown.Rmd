@@ -1,0 +1,132 @@
+---
+title: ''
+author: ''
+date: ''
+output:
+  pdf_document: null
+  fig_crop: no
+  html_document:
+    df_print: paged
+subtitle: ''
+highlight: tango
+number_sections: no
+fig_caption: yes
+keep_tex: yes
+includes:
+  in_header: Estilo.sty
+classoption: a4paper
+always_allow_html: yes
+---
+  
+  
+\begin{center}
+{\Large
+  DEPARTAMENTO DE ESTATÍSTICA} \\
+\vspace{0.5cm}
+\begin{figure}[!t]
+\centering
+\includegraphics[width=9cm, keepaspectratio]{logo-UnB.eps}
+\end{figure}
+\vskip 1em
+{\large
+  `r format(Sys.time(), '%d %B %Y')`}
+\vskip 3em
+{\LARGE
+  \textbf{Atividade 4.3}} \\
+\vskip 3em
+{\Large
+  Profª. Ana Maria Nogales} \\
+\vskip 1em
+{\Large
+  Métodos Estatísticos 2} \\
+\vskip 1em
+{\Large
+  Aluno: Bruno Gondim Toledo | Matrícula: 15/0167636} \\
+\vskip 1em
+\end{center}
+
+\newpage
+
+```{r setup, include=FALSE}
+if (!require("pacman")) install.packages("pacman")
+p_load(knitr,readr,tidyverse,nortest,twosamples,BSDA,sfsmisc,DescTools)
+```
+
+\begin{center}
+
+ATIVIDADE DESAFIO
+
+\vskip 1em
+
+INFERÊNCIA PARA DUAS POPULAÇÕES
+
+\end{center}
+
+\vskip 3em
+
+Para a realização do teste de Mann-Whitney - Wilcoxon:
+\vskip 3em
+a) determine a distribuição exata da estatística Ws = $\sum R(Y_j)$, sendo $H_0$ verdadeira, quando:
+\vskip 1em
+$a_1$) n = 3 e m = 4; 
+\vskip 1em
+$W_p$ tabelado para n = 3 e m = 4 e $\alpha=0,05$
+\vskip 1em
+e, $W_{1-p} = n(n+m+1)-W_p$;
+\vskip 1em
+A região de aceitação será:
+\vskip 1em
+$$7 < W_{s} < 17$$
+\vskip 1em
+Isto é, como $H_0$ é verdadeiro, então:
+\vskip 1em
+$$7<\sum R(Y_j)<17$$
+\vskip 2em
+$a_2$) n = 4 e m = 3
+\vskip 1em
+analogamente,
+\vskip 1em
+Com $\alpha=0,05$, a região de aceitação será $11 < W_{s} < 21$
+\vskip 1em
+Isto é, como $H_0$ é verdadeiro, então:
+\vskip 1em
+$$11<\sum R(Y_j)<21$$
+\newpage
+b) faça um gráfico para a distribuição de $W_s$ em cada caso
+\vskip 1em
+```{r grafico1, echo=FALSE}
+#define x-axis
+x <- seq(0, 28, length=10000)
+
+#calculate uniform distribution probabilities
+y <- dunif(x, min = 7, max = 17)
+
+#plot uniform distribution
+plot(x, y, type = 'l',
+     main="Região de aceitação de a1",
+     xlab="Valor de Ws"
+     ,ylab="")
+```
+\vskip 2em
+```{r grafico2, echo=FALSE}
+#define x-axis
+x <- seq(0, 28, length=10000)
+
+#calculate uniform distribution probabilities
+y <- dunif(x, min = 11, max = 21)
+
+#plot uniform distribution
+plot(x, y, type = 'l',
+     main="Região de aceitação de a2",
+     xlab="Valor de Ws"
+     ,ylab="")
+```
+\newpage
+c) o que ocorre com a distribuição da estatística $U_s = W_s - m(m+1) / 2$ 
+\vskip 3em
+A distribuição é igual para $a_1$ e $a_2$.
+\vskip 2em
+$$a_1 \rightarrow U_s = Ws-\frac{1}{2}m(m+1) = \sum R (Y_j) - 10$$
+\vskip 1em
+$$a_2 \rightarrow U_s = Ws-\frac{1}{2}m(m+1) = \sum R (Y_j) - 6$$
+\vskip 1em
